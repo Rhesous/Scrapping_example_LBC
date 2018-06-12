@@ -90,13 +90,14 @@ class request_lb():
              price INTERGER,
              city TEXT,
              description TEXT,
-             update DATE
+             update_date DATETIME
         )
         """.format(self.dataname))
         conn.commit()
         conn.close()
 
-    def update_db(self,step=10,nb_iter=100,time_sleep_=2):
+    def update_db(self,step=10,nb_iter=100,time_sleep_=2,minrent_=500,maxrent_=1500,
+                  msize_=0,maxsize_=15,minrooms_=3,maxrooms_=3):
         """
            Update the scrapped database.
            :params
@@ -116,38 +117,53 @@ class request_lb():
         nb_page_=1
         i=1
         while(i<=self.nb_iter):
-            lbc_page="https://www.leboncoin.fr/{}/offres/ile_de_france/?o={}&q={}".format(self.category,nb_page_,request_)
-            #Query the website and return the html to the variable 'page'
+            lbc_page = ("https://www.leboncoin.fr/locations/offres/?o={}".format(nb_page_) +
+                        "&q={}&location=Lyon&mrs=0&mre=2000&sqs=0&sqe=15&ros=1&roe=8&ret=2".format(
+                            request_,
+                            minrent_,
+                            maxrent_,
+                            msize_,
+                            maxsize_,
+                            minrooms_,
+                            maxrooms_))
+            # Query the website and return the html to the variable 'page'
             page = urllib.request.urlopen(lbc_page)
-            #Parse the html in the 'page' variable, and store it in Beautiful Soup format
-            soup = BeautifulSoup(page,"lxml")
+            # Parse the html in the 'page' variable, and store it in Beautiful Soup format
+            soup = BeautifulSoup(page, "lxml")
 
-            for link in soup.find_all('a',attrs={'class':"list_item clearfix trackable"}):
+            for link in soup.find_all('a', attrs={'class': "list_item clearfix trackable"}):
 
-                newlink=re.sub('&beta=1','','http:'+link.get('href'))
-                cursor.execute("""SELECT 1 FROM scrapped_lbc where link='{}'""".format(newlink))
+                newlink = re.sub('&beta=1', '', 'https:' + link.get('href'))
+                cursor.execute("""SELECT 1 FROM {} where link='{}'""".format(self.dataname,newlink))
                 if (cursor.fetchone() is None):
                     offer=urllib.request.urlopen(newlink)
                     potage=BeautifulSoup(offer,"lxml")
-                    # Récupération du texte
-                    for part in potage.find_all('p',attrs={'itemprop':"description"}):
-                        description=re.sub('\s\s+',' ',part.get_text())
                     # Récupération du titre
-                    for part in potage.find_all('h1',attrs={'itemprop':"name"}):
-                        title=re.sub('\s\s+',' ',part.get_text())
-                    #Récupération du prix, pas toujours présent
-                    if len(potage.find_all('h2',attrs={'itemprop':"price"}))>0:
-                        for part in potage.find_all('h2',attrs={'itemprop':"price"}):
-                            price=re.sub('\s\s+',' ',part.get('content'))
-                    else: price=''
+                    try:
+                        title = re.sub('\s\s+', ' ', link.find('p', attrs={'class': 'item_title'}).get_text())
+                    except AttributeError:
+                        title = re.sub('\s\s+', ' ', link.find('h2', attrs={'class': 'item_title'}).get_text())
+                    except:
+                        title = "TITLE NOT FOUND"
+                    # Récupération du prix, pas toujours présent
+                    if len(link.find_all('p', attrs={'class': "item_price"})) > 0:
+                        price = re.sub('\s\s+|\n+', ' ', link.find('p', attrs={'class': "item_price"}).get_text())
+                    elif len(link.find_all('h3', attrs={'class': "item_price"})) > 0:
+                        price = re.sub('\s\s+|\n+', ' ', link.find('h3', attrs={'class': "item_price"}).get_text())
+                    else:
+                        price = 'PRICE NOT FOUND'
                     # Récupération de l'adresse
-                    for span in potage.find_all('span', attrs={'itemprop':'address'}):
-                        city=re.sub('\s\s+',' ',span.contents[0])
+                    city=re.sub("Voir sur la carte","",potage.find('div', attrs={'class':'_1aCZv'}).get_text())
+                    # Récupération du texte
+                    description=re.sub('\s\s+',' ',potage.find('span',attrs={'class':"_2wB1z"}).get_text())
+
                     cursor.execute("""
-                    INSERT INTO scrapped_lbc(link, title, price, city, description,update_date) 
-                    VALUES(?, ?, ?, ?, ?, ?)""", (newlink,title,price,city,description, datetime.datetime.now()))
-                    if (i%5==0):
-                        print('Je commit {} nouvelles lignes'.format(step))
+                    INSERT INTO {} (link, title, price, city, description,update_date) 
+                    VALUES(?, ?, ?, ?, ?, ?)""".format(self.dataname), (newlink,title,price,city,description, datetime.datetime.now()))
+                    if (i%step==0):
+                        print('Committing {} new lines'.format(step))
+                        evol_ = i/nb_iter*100
+                        print("[" + "=" * int(evol_/2) + "-" * (50-int(evol_/2)) + "] {:.2f}%".format(evol_))
                         conn.commit()
                     i+=1
                     time.sleep(time_sleep_)
@@ -163,3 +179,7 @@ class request_lb():
 
 if __name__ == '__main__':
     print("Hello world !")
+    test = request_lb('T3', True, dataname='Lyon_rent')
+    test.delete_data()
+    test.update_db(step=5,nb_iter=50,time_sleep_=0.01)
+
