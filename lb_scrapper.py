@@ -106,7 +106,7 @@ class request_lb():
         conn.close()
 
     def update_db(self, step=10, nb_iter=100, time_sleep_=2, minrent_=500, maxrent_=1500,
-                  msize_=0, maxsize_=15, minrooms_=3, maxrooms_=3):
+                  msize_=0, maxsize_=15, minrooms_=3, maxrooms_=5):
         """
            Update the scrapped database.
            :params
@@ -119,6 +119,29 @@ class request_lb():
 
           """
         try:
+
+            " Translation of categorical variable : size "
+            dict_size_ = {
+                0: 0,
+                20: 1,
+                25: 2,
+                30: 3,
+                35: 4,
+                40: 5,
+                50: 6,
+                60: 7,
+                70: 8,
+                80: 9,
+                90: 10,
+                100: 11,
+                110: 12,
+                120: 13,
+                150: 14,
+                300: 15
+            }
+            msize_ = dict_size_.get(msize_, 16)
+            maxsize_ = dict_size_.get(maxsize_, 16)
+
             conn = sqlite3.connect(self.dataloc)
             cursor = conn.cursor()
             self.step = step
@@ -140,10 +163,9 @@ class request_lb():
                 page = urllib.request.urlopen(lbc_page)
                 # Parse the html in the 'page' variable, and store it in Beautiful Soup format
                 soup = BeautifulSoup(page, "lxml")
-                if len(soup.find_all("h1",attrs={'id':"result_ad_not_found_proaccount"}))>0:
+                if len(soup.find_all("h1", attrs={'id': "result_ad_not_found_proaccount"})) > 0:
                     print("No more results to show")
                     break
-
 
                 for link in soup.find_all('a', attrs={'class': "list_item clearfix trackable"}):
 
@@ -163,11 +185,21 @@ class request_lb():
 
                         # Price
                         if len(link.find_all('p', attrs={'class': "item_price"})) > 0:
-                            price = re.sub('\s\s+|\n+', ' ', link.find('p', attrs={'class': "item_price"}).get_text())
+                            price = re.search(r'\d+', (
+                                link.find('p', attrs={'class': "item_price"})
+                                    .get_text()
+                                    .strip()
+                                    .replace(" ", "")
+                            )).group(0)
                         elif len(link.find_all('h3', attrs={'class': "item_price"})) > 0:
-                            price = re.sub('\s\s+|\n+', ' ', link.find('h3', attrs={'class': "item_price"}).get_text())
+                            price = re.search(r'\d+', (
+                                link.find('h3', attrs={'class': "item_price"})
+                                    .get_text()
+                                    .strip()
+                                    .replace(" ", "")
+                            )).group(0)
                         else:
-                            price = 'PRICE NOT FOUND'
+                            price = None
 
                         # Import of divs to get refs
                         refs_ = potage.find_all('div', attrs={'data-reactid': re.compile('\D*')})
@@ -183,15 +215,21 @@ class request_lb():
                         # Surface
                         try:
                             id_ = int([x.get('data-reactid') for x in refs_ if x.getText() == "Surface"][0]) + 1
-                            surface_ = potage.find('div',
-                                                   attrs={'class': "_3Jxf3", 'data-reactid': id_}).get_text()
-                            surface_ = re.sub('\s\s+|\n+', ' ', surface_)
+                            surface_ = re.search(r'\d+', (
+                                potage.find('div', attrs={'class': "_3Jxf3", 'data-reactid': id_})
+                                    .get_text()
+                                    .strip()
+                                    .replace(" ", "")
+                            )).group(0)
+                            if surface_ == -1:
+                                surface_ = None
                         except Exception:
                             surface_ = None
 
                         # Charges
                         try:
-                            id_ = int([x.get('data-reactid') for x in refs_ if x.getText() == "Charges comprises"][0]) + 1
+                            id_ = int(
+                                [x.get('data-reactid') for x in refs_ if x.getText() == "Charges comprises"][0]) + 1
                             charges_ = potage.find('div',
                                                    attrs={'class': "_3Jxf3", 'data-reactid': id_}).get_text()
                             charges_ = re.sub('\s\s+|\n+', ' ', charges_)
@@ -200,7 +238,8 @@ class request_lb():
 
                         # Charges
                         try:
-                            id_ = int([x.get('data-reactid') for x in refs_ if x.getText() == "Meublé / Non meublé"][0]) + 1
+                            id_ = int(
+                                [x.get('data-reactid') for x in refs_ if x.getText() == "Meublé / Non meublé"][0]) + 1
                             furnished_ = potage.find('div',
                                                      attrs={'class': "_3Jxf3", 'data-reactid': id_}).get_text()
                             furnished_ = re.sub('\s\s+|\n+', ' ', furnished_)
@@ -243,11 +282,3 @@ class request_lb():
             print(lbc_page)
             conn.commit()
             conn.close()
-
-
-if __name__ == '__main__':
-    print("Hello world !")
-    scapper = request_lb('T3', False, dataname='Lyon_rent')
-    scapper.update_db(step=10, nb_iter=500, time_sleep_=0.05)
-    scapper.check_nb_entries()
-    print("Data collected thanks !")
