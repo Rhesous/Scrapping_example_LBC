@@ -1,13 +1,11 @@
 
 
-
 ```python
 import lb_scrapper as lbs
 import pandas as pd
 import sqlite3
 import seaborn as sns
-
-%matplotlib notebook
+import matplotlib.pyplot as plt
 ```
 
 
@@ -134,47 +132,29 @@ df.loc[df.surface == 1,"surface"] = None
 
 ```python
 sns.lmplot(y="price",x='surface', hue="city",data=df,fit_reg=False)
+plt.show()
 ```
 
 
-
-
-    <seaborn.axisgrid.FacetGrid at 0x1a0bbb8828>
-
-
-
-
-![png](output_6_1.png)
+![png](README_files/README_6_0.png)
 
 
 
 ```python
-sns.lmplot(y="price",x='surface', hue="city", col="city",data=df,col_wrap=2)
+sns.lmplot(y="price",x='surface', hue="city", col="city",data=df,col_wrap=3)
+plt.show()
 ```
 
 
-
-
-    <seaborn.axisgrid.FacetGrid at 0x1a1774ab38>
-
-
-
-
-![png](output_7_1.png)
+![png](README_files/README_7_0.png)
 
 
 
 ```python
 sns.pairplot(df.dropna(), kind="reg",hue="nb_rooms")
+plt.show()
 ```
 
 
-
-
-    <seaborn.axisgrid.PairGrid at 0x1a191902e8>
-
-
-
-
-![png](output_8_1.png)
+![png](README_files/README_8_0.png)
 
