@@ -6,6 +6,7 @@ import pandas as pd
 import sqlite3
 import seaborn as sns
 import matplotlib.pyplot as plt
+from IPython.display import display, HTML
 ```
 
 
@@ -38,8 +39,10 @@ df.city=pd.Categorical(df.city, categories=sorted(df.city.unique().tolist()),ord
 
 
 ```python
-df.describe()
+display(df.describe())
 ```
+
+
 
 
 <div>
@@ -117,6 +120,7 @@ df.describe()
   </tbody>
 </table>
 </div>
+
 
 
 A lot of observation with surface == 1 appears, which seems to be a wrong value, so we are going to delete them.
