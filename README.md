@@ -42,8 +42,6 @@ df.describe()
 ```
 
 
-
-
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -119,7 +117,6 @@ df.describe()
   </tbody>
 </table>
 </div>
-
 
 
 A lot of observation with surface == 1 appears, which seems to be a wrong value, so we are going to delete them.
