@@ -2,7 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a1bad31f-249e-4965-9cfb-b06e61a122b5" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Rent quick analysis in Lyon.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/Rent quick analysis in Lyon.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/convert_to_md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output_6_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output_7_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output_8_1.png" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -37,23 +42,16 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="convert_to_md" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/convert_to_md">
+      <file leaf-file-name="convert_to_md.sh" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/convert_to_md.sh">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="15">
-              <caret line="1" column="86" lean-forward="true" selection-start-line="1" selection-start-column="86" selection-end-line="1" selection-end-column="86" />
+              <caret line="1" column="9" selection-start-line="1" selection-start-column="9" selection-end-line="1" selection-end-column="9" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.md" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2026" />
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README_7_0.png" pinned="false" current-in-tab="true">
+      <file leaf-file-name="README_7_0.png" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README_files/README_7_0.png">
           <provider selected="true" editor-type-id="images" />
         </entry>
@@ -78,9 +76,10 @@
       <list>
         <option value="$PROJECT_DIR$/leboncoin.ipynb" />
         <option value="$PROJECT_DIR$/Untitled.ipynb" />
-        <option value="$PROJECT_DIR$/scrapper.py" />
         <option value="$PROJECT_DIR$/lb_scrapper.py" />
         <option value="$PROJECT_DIR$/datas/convert_to_md" />
+        <option value="$PROJECT_DIR$/scrapper.py" />
+        <option value="$PROJECT_DIR$/convert_to_md.sh" />
       </list>
     </option>
   </component>
@@ -277,7 +276,14 @@
       <option name="project" value="LOCAL" />
       <updated>1529055156434</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Added images">
+      <created>1529055301000</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1529055301000</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TodoView">
@@ -295,12 +301,12 @@
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24947146" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49964765" weight="0.32907802" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50880903" side_tool="true" visible="true" weight="0.32765958" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50951374" side_tool="true" visible="true" weight="0.32765958" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.47075406" weight="0.21843971" />
       <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.49964765" weight="0.32956153" />
       <window_info anchor="bottom" id="Python Console" order="7" sideWeight="0.751938" weight="0.3134752" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49119097" visible="true" weight="0.32765958" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49048626" visible="true" weight="0.32765958" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.48132488" weight="0.38014185" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -320,7 +326,8 @@
     <MESSAGE value="Collection of more informations" />
     <MESSAGE value="Correction of the no result error" />
     <MESSAGE value="Added readme and first examples on notebook" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added readme and first examples on notebook" />
+    <MESSAGE value="Added images" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added images" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -588,15 +595,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scrapper.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="32" selection-start-line="15" selection-start-column="32" selection-end-line="15" selection-end-column="32" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/README_files/README_7_0.png">
+      <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/convert_to_md">
       <provider selected="true" editor-type-id="text-editor">
@@ -607,11 +607,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2026" />
+        <state relative-caret-position="1593">
+          <caret line="137" lean-forward="true" selection-start-line="137" selection-end-line="137" />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README_files/README_7_0.png">
-      <provider selected="true" editor-type-id="images" />
+    <entry file="file://$PROJECT_DIR$/scrapper.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="32" selection-start-line="15" selection-start-column="32" selection-end-line="15" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/convert_to_md.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="9" selection-start-line="1" selection-start-column="9" selection-end-line="1" selection-end-column="9" />
+        </state>
+      </provider>
     </entry>
   </component>
 </project>
