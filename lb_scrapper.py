@@ -105,8 +105,8 @@ class request_lb():
         conn.commit()
         conn.close()
 
-    def update_db(self, step=10, nb_iter=100, time_sleep_=2, minrent_=500, maxrent_=1500,
-                  msize_=0, maxsize_=15, minrooms_=3, maxrooms_=5):
+    def update_db(self, step=10, nb_iter=100, time_sleep_=2, city_targ_="Lyon", minrent_=500, maxrent_=1700,
+                  msize_=0, maxsize_=300, minrooms_=2, maxrooms_=5):
         """
            Update the scrapped database.
            :params
@@ -121,27 +121,6 @@ class request_lb():
         try:
 
             " Translation of categorical variable : size "
-            dict_size_ = {
-                0: 0,
-                20: 1,
-                25: 2,
-                30: 3,
-                35: 4,
-                40: 5,
-                50: 6,
-                60: 7,
-                70: 8,
-                80: 9,
-                90: 10,
-                100: 11,
-                110: 12,
-                120: 13,
-                150: 14,
-                300: 15
-            }
-            msize_ = dict_size_.get(msize_, 16)
-            maxsize_ = dict_size_.get(maxsize_, 16)
-
             conn = sqlite3.connect(self.dataloc)
             cursor = conn.cursor()
             self.step = step
@@ -150,26 +129,32 @@ class request_lb():
             nb_page_ = 1
             i = 1
             while (i <= self.nb_iter):
-                lbc_page = ("https://www.leboncoin.fr/locations/offres/?o={}".format(nb_page_) +
-                            "&q={}&location=Lyon&mrs={}&mre={}&sqs={}&sqe={}&ros={}&roe={}&ret=2".format(
-                                request_,
-                                minrent_,
-                                maxrent_,
-                                msize_,
-                                maxsize_,
-                                minrooms_,
-                                maxrooms_))
+                if request_ != "":
+                    request_ = "?text={}&".format(request_)
+                lbc_page = ("https://www.leboncoin.fr/recherche/"
+                            + request_
+                            + "?category=10&cities={}".format(city_targ_)
+                            + "&real_estate_type=2&price={}-{}&rooms={}-{}&square={}-{}&page={}".format(
+                            minrent_,
+                            maxrent_,
+                            minrooms_,
+                            maxrooms_,
+                            msize_,
+                            maxsize_,
+                            nb_page_
+                        ))
                 # Query the website and return the html to the variable 'page'
                 page = urllib.request.urlopen(lbc_page)
                 # Parse the html in the 'page' variable, and store it in Beautiful Soup format
                 soup = BeautifulSoup(page, "lxml")
-                if len(soup.find_all("h1", attrs={'id': "result_ad_not_found_proaccount"})) > 0:
+                # if len(soup.find_all("h1", attrs={'id': "result_ad_not_found_proaccount"})) > 0:
+                if len(soup.find_all('p', attrs={'_2fdgs'})) > 0:
                     print("No more results to show")
                     break
 
-                for link in soup.find_all('a', attrs={'class': "list_item clearfix trackable"}):
+                for link in soup.find_all('a', attrs={'class': "clearfix trackable"}):
 
-                    newlink = re.sub('&beta=1', '', 'https:' + link.get('href'))
+                    newlink = re.sub('&beta=1', '', 'https://www.leboncoin.fr' + link.get('href'))
                     cursor.execute("""SELECT 1 FROM {} where link='{}'""".format(self.dataname, newlink))
                     if (cursor.fetchone() is None):
                         offer = urllib.request.urlopen(newlink)
@@ -177,16 +162,14 @@ class request_lb():
 
                         # Title
                         try:
-                            title = re.sub('\s\s+', ' ', link.find('p', attrs={'class': 'item_title'}).get_text())
-                        except AttributeError:
-                            title = re.sub('\s\s+', ' ', link.find('h2', attrs={'class': 'item_title'}).get_text())
+                            title = re.sub('\s\s+', ' ', potage.find('h1').get_text())
                         except:
                             title = "TITLE NOT FOUND"
 
                         # Price
-                        if len(link.find_all('p', attrs={'class': "item_price"})) > 0:
+                        if len(link.find_all('span', attrs={'itemprop': "price"})) > 0:
                             price = re.search(r'\d+', (
-                                link.find('p', attrs={'class': "item_price"})
+                                link.find('span', attrs={'itemprop': "price"})
                                     .get_text()
                                     .strip()
                                     .replace(" ", "")
@@ -247,10 +230,17 @@ class request_lb():
                             furnished_ = None
 
                         # Récupération de l'adresse
-                        city = re.sub("Voir sur la carte", "", potage.find('div', attrs={'class': '_1aCZv'}).get_text())
+                        try:
+                            city = re.sub("Voir sur la carte", "",
+                                          potage.find('div',
+                                                      attrs={'data-qa-id': 'adview_location_informations'}).get_text())
+                        except:
+                            city = city_targ_
 
                         # Récupération du texte
-                        description = re.sub('\s\s+', ' ', potage.find('span', attrs={'class': "_2wB1z"}).get_text())
+                        description = re.sub('<br>|<br/>|</br>', ' ',
+                                             str(potage.find('span', attrs={'class': "_2wB1z"})))
+                        description = re.search('<span .*>(.*?)<\/span>', description).group(1)
 
                         cursor.execute("""
                         INSERT INTO {} (link, title, price, city, nb_rooms,
