@@ -127,7 +127,6 @@ df.select_dtypes(include=[np.number,bool]).astype(float).describe()
 
 
 <div>
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
